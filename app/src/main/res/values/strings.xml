@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">notion-android</string>
+    <string name="shp_name">SHP</string>
+    <string name="key">cookies</string>
 </resources>
