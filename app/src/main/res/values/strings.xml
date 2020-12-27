@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">notion-android</string>
-    <string name="shp_name">SHP</string>
+    <string name="app_name">NotionAndroid</string>
+    <string name="fab_content_description">floating action button</string>
     <string name="key">cookies</string>
+    <string name="url">https://notion.so/</string>
+    <string name="shp_name">shp_name</string>
 </resources>
