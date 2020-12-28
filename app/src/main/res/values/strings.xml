@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NotionAndroid</string>
+    <string name="app_name">Notion</string>
     <string name="fab_content_description">floating action button</string>
     <string name="key">cookies</string>
     <string name="url">https://notion.so/</string>

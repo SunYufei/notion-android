@@ -3,6 +3,7 @@ package ml.sunyufei.notion;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import android.webkit.WebViewClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
-    private UrlModel myViewModel;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +34,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // shared preferences
+        loadSharedPreferences();
+
         // load url
         loadUrlWithCookies();
+    }
+
+    private void loadSharedPreferences() {
+        String name = getString(R.string.shp_name);
+        sharedPreferences = getSharedPreferences(name, MODE_PRIVATE);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private void loadUrlWithCookies() {
         String url = getString(R.string.url);
+        String key = getString(R.string.key);
 
         // WebView
         WebView webView = findViewById(R.id.webView);
@@ -58,8 +68,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String reqUrl = request.getUrl().toString();
                 CookieManager manager = CookieManager.getInstance();
-                String cookie = manager.getCookie(reqUrl);
-                // save to shared preference
+                String cookies = manager.getCookie(reqUrl);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(key, cookies);
+                editor.apply();
                 view.loadUrl(reqUrl);
                 return true;
             }
@@ -69,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
         CookieManager manager = CookieManager.getInstance();
         manager.setAcceptCookie(true);
         manager.removeSessionCookies(null);
-//        manager.setCookie(url, null);
+        String cookies = sharedPreferences.getString(key, "");
+        manager.setCookie(url, cookies);
         manager.flush();
 
         // load url
