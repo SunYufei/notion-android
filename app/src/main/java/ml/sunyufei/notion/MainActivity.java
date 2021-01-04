@@ -17,6 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
+    private String url;
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,24 +37,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // shared preferences
-        loadSharedPreferences();
-
-        // load url
-        loadUrlWithCookies();
-    }
-
-    private void loadSharedPreferences() {
         String name = getString(R.string.shp_name);
         sharedPreferences = getSharedPreferences(name, MODE_PRIVATE);
+
+        // load url
+        initWebView();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void loadUrlWithCookies() {
-        String url = getString(R.string.url);
+    private void initWebView() {
+        url = getString(R.string.url);
         String key = getString(R.string.key);
 
         // WebView
-        WebView webView = findViewById(R.id.webView);
+        webView = findViewById(R.id.webView);
 
         // WebView settings
         WebSettings settings = webView.getSettings();
@@ -87,5 +85,14 @@ public class MainActivity extends AppCompatActivity {
 
         // load url
         webView.loadUrl(url);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack() && !webView.getUrl().equals(url)) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
