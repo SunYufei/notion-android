@@ -7,11 +7,14 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private String url;
     private WebView webView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +33,10 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             Configuration config = getResources().getConfiguration();
-            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE)
                 MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
+            else
                 MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
         });
 
         // shared preferences
@@ -41,13 +44,16 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(name, MODE_PRIVATE);
 
         // load url
-        initWebView();
+        initWebViewWithProgressBar();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void initWebView() {
+    private void initWebViewWithProgressBar() {
         url = getString(R.string.url);
         String key = getString(R.string.key);
+
+        // ProgressBar
+        progressBar = findViewById(R.id.progressBar);
 
         // WebView
         webView = findViewById(R.id.webView);
@@ -75,6 +81,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // WebChromeClient
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                progressBar.setProgress(newProgress);
+                progressBar.setVisibility(newProgress == 100 ? View.GONE : View.VISIBLE);
+                super.onProgressChanged(view, newProgress);
+            }
+        });
+
         // sync cookies
         CookieManager manager = CookieManager.getInstance();
         manager.setAcceptCookie(true);
@@ -89,10 +105,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack() && !webView.getUrl().equals(url)) {
+        if (webView.canGoBack() && !webView.getUrl().equals(url))
             webView.goBack();
-        } else {
+        else
             super.onBackPressed();
-        }
     }
 }
